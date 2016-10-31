@@ -1,7 +1,7 @@
 {
   "name": "enrise-logger",
   "description": "Logger used within Enrise projects and module's",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Team MatchMinds @ Enrise",
   "main": "index.js",
   "license": "MIT",
