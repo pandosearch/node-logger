@@ -2,8 +2,8 @@
 > A simple wrapper around [winston](https://github.com/winstonjs/winston).
 
 ### Installation
-NPM: `npm install enrise-node-logger --save`  
-Yarn: `yarn add enrise-node-logger`
+NPM: `npm install enrise-logger --save`  
+Yarn: `yarn add enrise-logger`
 
 ### Initialization and usage
 At the beginning of your application, be sure to initialize the logger:  
