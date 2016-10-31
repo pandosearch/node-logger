@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "author": "Team MatchMinds @ Enrise",
   "main": "index.js",
+  "license": "MIT",
   "engines": {
     "node": ">=4.0.0"
   },
