@@ -1,4 +1,10 @@
 # Node.js logger module
+
+[![build:?](https://img.shields.io/travis/Enrise/node-logger.svg?style=flat-square)](https://travis-ci.org/Enrise/node-logger)
+[![Coverage Status](https://img.shields.io/coveralls/Enrise/node-logger/master.svg?style=flat-square)](https://coveralls.io/github/Enrise/node-logger?branch=master)
+[![dependencies:?](https://img.shields.io/david/Enrise/node-logger.svg?style=flat-square)](https://david-dm.org/Enrise/node-logger)
+[![devDependencies:?](https://img.shields.io/david/dev/Enrise/node-logger.svg?style=flat-square)](https://david-dm.org/Enrise/node-logger)
+
 > A simple wrapper around [winston](https://github.com/winstonjs/winston).
 
 ### Installation
