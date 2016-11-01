@@ -13,12 +13,12 @@ Yarn: `yarn add enrise-logger`
 
 ### Initialization and usage
 At the beginning of your application, be sure to initialize the logger:  
-`require('enrise-node-logger')([config: Object]);`
+`require('enrise-logger')([config: Object]);`
 
 Where `config` is an optional object. See [below](#configuration) for further instructions.
 
-After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:
-`const log = require('enrise-node-logger').get('MyLogger');`
+After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:  
+`const log = require('enrise-logger').get('MyLogger');`
 
 The `log` object contains functions for each [log-level](#levels):
 - `log.info('Some log message');`  
