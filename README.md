@@ -17,7 +17,7 @@ At the beginning of your application, be sure to initialize the logger:
 
 Where `config` is an optional object. See [below](#configuration) for further instructions.
 
-After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:
+After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:  
 `const log = require('enrise-node-logger').get('MyLogger');`
 
 The `log` object contains functions for each [log-level](#levels):
