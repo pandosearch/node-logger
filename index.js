@@ -23,10 +23,12 @@ function Logger(settings) {
 Logger.prototype.get = function (label, level) {
   const conf = _.cloneDeep(this._settings.winston);
 
-  conf.console.label = label;
-  conf.console.level = level || conf.console.level;
-
   const transports = _.map(this._settings.transports, (transport) => {
+    const transportSettings = conf[_.lowerFirst(transport)];
+
+    transportSettings.label = label;
+    transportSettings.level = level || transportSettings.level;
+
     const transportConfig = this._settings[`get${transport}Config`](conf);
 
     return new winston.transports[transport](transportConfig);
