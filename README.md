@@ -34,14 +34,14 @@ The default configuration looks as follows. Everything can be overwritten on ini
     return config.console;
   },
   getLogstashUDPConfig: (config) => {
-    return config.logstash;
+    return config.logstashUDP;
   },
   winston: {
     console: {
       level: 'info',
       colorize: true
     },
-    logstash: {}
+    logstashUDP: {}
   },
   levels: {
     error: 0,
@@ -66,7 +66,7 @@ Overwrite and modify the configuration used for their corresponding transport. T
 #### `winston`
 An object with specific configuration for the transporters.
 - `console`: [winston.Console documentation](https://github.com/winstonjs/winston)
-- `logstash`: [winston.LogstashUDP documentation](https://www.npmjs.com/package/winston-logstash-udp)
+- `logstashUDP`: [winston.LogstashUDP documentation](https://www.npmjs.com/package/winston-logstash-udp)
 
 #### `levels`
 The node-logger uses more detailed log-levels than winston does. The higher the priority the more important the message is considered to be, and the lower the corresponding integer priority. These levels can be modified to your liking.
