@@ -29,19 +29,11 @@ The `log` object contains functions for each [log-level](#levels):
 The default configuration looks as follows. Everything can be overwritten on initialization.
 ```javascript
 {
-  transports: ['Console'],
-  getConsoleConfig: (config) => {
-    return config.console;
-  },
-  getLogstashUDPConfig: (config) => {
-    return config.logstashUDP;
-  },
-  winston: {
-    console: {
+  transports: {
+    Console: {
       level: 'info',
       colorize: true
-    },
-    logstashUDP: {}
+    }
   },
   levels: {
     error: 0,
@@ -57,17 +49,12 @@ The default configuration looks as follows. Everything can be overwritten on ini
 }
 ```
 
-#### `transports`
-Define all transports that the logger should use. Defaults to only the Console. The other possible transport is `LogstashUDP`. These can be used together.
-
-#### `getConsoleConfig` & `getLogstashUDPConfig`
-Overwrite and modify the configuration used for their corresponding transport. The `config` object is _always_ a clone of the `config.winston` object.
-
-#### `winston`
-An object with specific configuration for the transporters.
-- `console`: [winston.Console documentation](https://github.com/winstonjs/winston)
-- `logstashUDP`: [winston.LogstashUDP documentation](https://www.npmjs.com/package/winston-logstash-udp)
+#### `transports: Object`
+The keys define the transports that the logger should use, the value is the configuration passed to the transport constructor. Multiple transports can be combined. Defaults to only the Console with the settings above. To exclude the Console transport, set it to `null`. Possible transports are:
+- `Console`: [winston.Console documentation](https://github.com/winstonjs/winston/blob/master/docs/transports.md#console-transport)
+- `File`: [winston.File documentation](https://github.com/winstonjs/winston/blob/master/docs/transports.md#file-transport)
+- `Http`: [winston.Http documentation](https://github.com/winstonjs/winston/blob/master/docs/transports.md#http-transport)
+- `LogstashUDP`: [winston.LogstashUDP documentation](https://www.npmjs.com/package/winston-logstash-udp)
 
 #### `levels`
 The node-logger uses more detailed log-levels than winston does. The higher the priority the more important the message is considered to be, and the lower the corresponding integer priority. These levels can be modified to your liking.
-

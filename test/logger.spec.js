@@ -1,6 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
 const chai = require('chai');
 const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
@@ -35,16 +34,19 @@ const winston = {
   loggers: {
     add: sinon.stub().returns(winstonCLI)
   },
-  transports: {
-    Console: sinon.stub(),
-    LogstashUDP: sinon.stub()
-  },
   Container: sinon.stub().returns(winstonContainer)
 };
 
 // Keep reference to main Logger constructor.
 const Logger = proxyquire('../index.js', {
   winston: winston
+});
+
+beforeEach(() => {
+  winston.transports = {
+    Console: sinon.stub(),
+    LogstashUDP: sinon.stub()
+  };
 });
 
 describe('Logger', () => {
@@ -71,28 +73,22 @@ describe('Logger', () => {
 
   it('overwrites and merges with default settings', () => {
     const logger = new Logger({
-      winston: {
-        console: {
+      transports: {
+        Console: {
           level: 'verbose'
         }
       }
     });
     expect(logger._settings).to.deep.equal({
-      transports: ['Console'],
-      getConsoleConfig: logger._settings.getConsoleConfig,
-      getLogstashUDPConfig: logger._settings.getLogstashUDPConfig,
       longtrace: false,
-      winston: {
-        console: {
+      transports: {
+        Console: {
           level: 'verbose',
           colorize: true
-        },
-        logstashUDP: {}
+        }
       },
       levels: levels
     });
-    expect(logger._settings.getConsoleConfig).to.be.a('function');
-    expect(logger._settings.getLogstashUDPConfig).to.be.a('function');
   });
 
   it('creates the default transports defined by config.transports', () => {
@@ -104,35 +100,6 @@ describe('Logger', () => {
     });
   });
 
-  it('calls a custom get config function with a clone of the winston data', () => {
-    let winstonConfig;
-    const loggerConfig = {
-      winston: {
-        console: {}
-      },
-      getConsoleConfig: (_config) => {
-        winstonConfig = _config;
-        return winstonConfig;
-      }
-    };
-    new Logger(loggerConfig).get('LABEL');
-    expect(loggerConfig.winston).to.not.equal(winstonConfig);
-    expect(_.set(loggerConfig.winston, 'console.label', 'LABEL')).to.deep.equal(winstonConfig);
-  });
-
-  it('calls a custom get config function for the console transport', () => {
-    new Logger({
-      getConsoleConfig: () => {
-        return {
-          foo: 'bar'
-        };
-      }
-    }).get('TEST');
-    expect(winston.transports.Console).to.have.been.calledWith({
-      foo: 'bar'
-    });
-  });
-
   it('correctly sets the log-levels', () => {
     new Logger().get('TEST');
     expect(winstonLogger.setLevels).to.have.been.calledWith(levels);
@@ -140,9 +107,8 @@ describe('Logger', () => {
 
   it('allows modifying the transports configuration', () => {
     new Logger({
-      transports: ['Console', 'LogstashUDP'],
-      winston: {
-        logstashUDP: {
+      transports: {
+        LogstashUDP: {
           bar: 'foo',
           level: 'verbose'
         }
@@ -153,6 +119,24 @@ describe('Logger', () => {
       colorize: true,
       label: 'TEST'
     });
+    expect(winston.transports.LogstashUDP).to.have.been.calledWith({
+      bar: 'foo',
+      level: 'verbose',
+      label: 'TEST'
+    });
+  });
+
+  it('allows removal of default Console transport', () => {
+    new Logger({
+      transports: {
+        Console: null,
+        LogstashUDP: {
+          bar: 'foo',
+          level: 'verbose'
+        }
+      }
+    }).get('TEST');
+    expect(winston.transports.Console).to.not.have.been.called;
     expect(winston.transports.LogstashUDP).to.have.been.calledWith({
       bar: 'foo',
       level: 'verbose',

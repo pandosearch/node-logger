@@ -21,17 +21,18 @@ function Logger(settings) {
 }
 
 Logger.prototype.get = function (label, level) {
-  const conf = _.cloneDeep(this._settings.winston);
+  const conf = _.cloneDeep(this._settings.transports);
 
-  const transports = _.map(this._settings.transports, (transport) => {
-    const transportSettings = conf[_.lowerFirst(transport)];
+  // Filter out falsey values
+  const transportKeys = _.keys(_.pickBy(this._settings.transports, _.identity));
+
+  const transports = _.map(transportKeys, (transport) => {
+    const transportSettings = conf[transport];
 
     transportSettings.label = label;
     transportSettings.level = level || transportSettings.level;
 
-    const transportConfig = this._settings[`get${transport}Config`](conf);
-
-    return new winston.transports[transport](transportConfig);
+    return new winston.transports[transport](transportSettings);
   });
 
   // Create a new logger with the console transport layer by default
