@@ -87,7 +87,7 @@ describe('Logger', () => {
           level: 'verbose',
           colorize: true
         },
-        logstash: {}
+        logstashUDP: {}
       },
       levels: levels
     });
@@ -142,8 +142,9 @@ describe('Logger', () => {
     new Logger({
       transports: ['Console', 'LogstashUDP'],
       winston: {
-        logstash: {
-          bar: 'foo'
+        logstashUDP: {
+          bar: 'foo',
+          level: 'verbose'
         }
       }
     }).get('TEST');
@@ -153,7 +154,9 @@ describe('Logger', () => {
       label: 'TEST'
     });
     expect(winston.transports.LogstashUDP).to.have.been.calledWith({
-      bar: 'foo'
+      bar: 'foo',
+      level: 'verbose',
+      label: 'TEST'
     });
   });
 });

@@ -3,7 +3,7 @@ module.exports = {
     return config.console;
   },
   getLogstashUDPConfig: (config) => {
-    return config.logstash;
+    return config.logstashUDP;
   },
   transports: ['Console'],
   longtrace: false,
@@ -12,7 +12,7 @@ module.exports = {
       level: 'info',
       colorize: true
     },
-    logstash: {}
+    logstashUDP: {}
   },
   levels: {
     error: 0,
