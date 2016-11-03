@@ -1,19 +1,11 @@
 module.exports = {
-  getConsoleConfig: (config) => {
-    return config.console;
-  },
-  getLogstashUDPConfig: (config) => {
-    return config.logstashUDP;
-  },
-  transports: ['Console'],
-  longtrace: false,
-  winston: {
-    console: {
+  transports: {
+    Console: {
       level: 'info',
       colorize: true
-    },
-    logstashUDP: {}
+    }
   },
+  longtrace: false,
   levels: {
     error: 0,
     warn: 1,
