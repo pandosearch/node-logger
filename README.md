@@ -24,6 +24,9 @@ The `log` object contains functions for each [log-level](#levels):
 - `log.info('Some log message');`  
 - `log.error(new Error('Some error'));`
 
+#### `.get(name: String, [level: String], [transportConfig: Object])`
+The `.get()` function allows additional customization. The level can overwrite the logging-level defined during initialization. A third argument can be passed to overwrite transport configuration. This will be merged onto the object passed to the transports.
+
 ### Configuration
 
 The default configuration looks as follows. Everything can be overwritten on initialization.

@@ -23,7 +23,7 @@ function Logger(settings) {
 Logger.prototype.get = function (label, level, transportConfig) {
   const conf = _.cloneDeep(this._settings.transports);
 
-  if (transportConfig) {
+  if (_.isPlainObject(transportConfig)) {
     _.merge(conf, transportConfig);
   }
 
