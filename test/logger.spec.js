@@ -143,4 +143,39 @@ describe('Logger', () => {
       label: 'TEST'
     });
   });
+
+  it('clones the passed configuration', () => {
+    const config = {
+      foo: 'bar',
+      deep: {
+        yes: []
+      }
+    };
+
+    const logger = new Logger(config);
+
+    // Default values will be merged on the config, it is not modified if it is still the same.
+    expect(config).to.deep.equal({
+      foo: 'bar',
+      deep: {
+        yes: []
+      }
+    });
+    expect(config).to.not.equal(logger._settings);
+  });
+
+  it('allows passing extra transport configuration to the .get() function', () => {
+    new Logger().get('label', null, {
+      Console: {
+        extra: 'settings'
+      }
+    });
+
+    expect(winston.transports.Console).to.have.been.calledWith({
+      level: 'info',
+      colorize: true,
+      extra: 'settings',
+      label: 'label'
+    });
+  });
 });

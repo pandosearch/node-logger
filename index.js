@@ -11,7 +11,7 @@ function Logger(settings) {
     return new Logger(settings);
   }
 
-  this._settings = _.defaultsDeep(settings, defaultSettings);
+  this._settings = _.defaultsDeep(_.cloneDeep(settings), defaultSettings);
   this._container = new winston.Container({
     exitOnError: false
   });
@@ -20,8 +20,12 @@ function Logger(settings) {
   module.exports = this;
 }
 
-Logger.prototype.get = function (label, level) {
+Logger.prototype.get = function (label, level, transportConfig) {
   const conf = _.cloneDeep(this._settings.transports);
+
+  if (_.isPlainObject(transportConfig)) {
+    _.merge(conf, transportConfig);
+  }
 
   // Filter out falsey values
   const transportKeys = _.keys(_.pickBy(this._settings.transports, _.identity));
