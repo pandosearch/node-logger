@@ -11,7 +11,10 @@ function Logger(settings) {
     return new Logger(settings);
   }
 
-  this._settings = _.defaultsDeep(_.cloneDeep(settings), defaultSettings);
+  const winstonSettings = _.get(settings, 'winston', {});
+
+  this._settings = _.defaultsDeep(_.cloneDeep(winstonSettings), defaultSettings);
+  this._namedSettings = _.mapKeys(_.omit(settings, 'winston'), (v, k) => {return k.toUpperCase();});
   this._container = new winston.Container({
     exitOnError: false
   });
@@ -27,6 +30,11 @@ Logger.prototype.get = function (label, level, transportConfig) {
     _.merge(conf, transportConfig);
   }
 
+  // Check for a config specific for the logger we're about to create
+  const namedSetting = _.get(this._namedSettings, label.toUpperCase());
+  // Named Config level comes before programmatic set level, as the config can be changed post-deploy
+  const levelToUse = _.get(namedSetting, 'level', level);
+
   // Filter out falsey values
   const transportKeys = _.keys(_.pickBy(this._settings.transports, _.identity));
 
@@ -34,7 +42,7 @@ Logger.prototype.get = function (label, level, transportConfig) {
     const transportSettings = conf[transport];
 
     transportSettings.label = label;
-    transportSettings.level = level || transportSettings.level;
+    transportSettings.level = levelToUse || transportSettings.level;
 
     return new winston.transports[transport](transportSettings);
   });
