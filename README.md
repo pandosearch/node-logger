@@ -8,19 +8,20 @@
 > A simple wrapper around [winston](https://github.com/winstonjs/winston).
 
 ### Installation
-NPM: `npm install enrise-logger --save`
+NPM: `npm install enrise-logger --save`  
 Yarn: `yarn add enrise-logger`
 
 ### Initialization and usage
-At the beginning of your application, be sure to initialize the logger:
+At the beginning of your application, be sure to initialize the logger:  
 `require('enrise-logger')([config: Object]);`
 
 Where `config` is an optional object. See [below](#configuration) for further instructions.
 
-After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:
+After the module is initialized, simply call `.get(name: String)` on the module to return a namespaced logger:  
 `const log = require('enrise-logger').get('MyLogger');`
 
 The `log` object contains functions for each [log-level](#levels):
+
 - `log.info('Some log message');`
 - `log.error(new Error('Some error'));`
 
@@ -58,8 +59,7 @@ The default configuration looks as follows. Everything can be overwritten on ini
 The top-level key `winston` in the config contains winston-specific configuration.
 
 #### `<namedloggerKey>: {level: String}`
-You can add other toplevel-keys
-to provide named-logger specific level-information. This functionality allows you to set the log-level through configuration
+You can add other toplevel-keys to provide named-logger specific level-information. This functionality allows you to set the log-level through configuration.
 
 ``` javascript
 {
