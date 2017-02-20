@@ -13,7 +13,7 @@ function Logger(settings) {
 
   const winstonSettings = _.get(settings, 'winston', {});
 
-  this._settings = _.defaultsDeep(_.cloneDeep(winstonSettings), defaultSettings);
+  this._settings = _.defaultsDeep(_.cloneDeep(winstonSettings), _.get(defaultSettings, 'winston', {}));
   this._namedSettings = _.mapKeys(_.omit(settings, 'winston'), (v, k) => {return k.toUpperCase();});
   this._container = new winston.Container({
     exitOnError: false
