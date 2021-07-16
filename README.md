@@ -7,6 +7,9 @@
 
 > A simple wrapper around [winston](https://github.com/winstonjs/winston).
 
+## Deprecated
+This repository is deprecated and will be archived.
+
 ### Installation
 NPM: `npm install enrise-logger --save`  
 Yarn: `yarn add enrise-logger`
