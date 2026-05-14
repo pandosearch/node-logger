@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const proxyquire = require('proxyquire').noCallThru();
 proxyquire.noPreserveCache();
 const expect = chai.expect;
-chai.use(require('sinon-chai'));
+chai.use(require('sinon-chai').default);
 
 const levels = {
   error: 0,
@@ -35,12 +35,13 @@ const winston = {
   loggers: {
     add: sinon.stub().returns(winstonCLI)
   },
-  Container: sinon.stub().returns(winstonContainer)
+  Container: sinon.stub().returns(winstonContainer),
+  transports: {}
 };
 
 // Keep reference to main (Proxied) Logger constructor.
 const ProxiedLogger = proxyquire('../index.js', {
-  winston: winston
+  winston
 });
 
 // When no need to verify stub-calls use the Logger
@@ -93,7 +94,7 @@ describe('Logger', () => {
           colorize: true
         }
       },
-      levels: levels
+      levels
     });
   });
 
@@ -108,7 +109,7 @@ describe('Logger', () => {
 
   it('correctly sets the log-levels', () => {
     new ProxiedLogger().get('TEST');
-    expect(winstonLogger.setLevels).to.have.been.calledWith(levels);
+    expect(winstonContainer.get).to.have.been.calledWith('TEST', sinon.match({levels}));
   });
 
   it('allows modifying the transports configuration', () => {
