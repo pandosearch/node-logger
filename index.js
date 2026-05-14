@@ -4,7 +4,7 @@ const defaultSettings = require('./settings.js');
 
 const _ = require('lodash');
 const winston = require('winston');
-require('winston-logstash-udp');
+winston.transports.LogstashUDP = require('./lib/logstash-udp-transport');
 
 function Logger(settings) {
   if (!(this instanceof Logger)) {
@@ -14,7 +14,7 @@ function Logger(settings) {
   const winstonSettings = _.get(settings, 'winston', {});
 
   this._settings = _.defaultsDeep(_.cloneDeep(winstonSettings), defaultSettings.winston);
-  this._namedSettings = _.mapKeys(_.omit(settings, 'winston'), (v, k) => {return k.toUpperCase();});
+  this._namedSettings = _.mapKeys(_.omit(settings, 'winston'), (v, k) => k.toUpperCase());
   this._container = new winston.Container({
     exitOnError: false
   });
@@ -38,7 +38,7 @@ Logger.prototype.get = function (label, level, transportConfig) {
   // Filter out falsey values
   const transportKeys = _.keys(_.pickBy(this._settings.transports, _.identity));
 
-  const transports = _.map(transportKeys, (transport) => {
+  const transports = _.map(transportKeys, transport => {
     const transportSettings = conf[transport];
 
     transportSettings.label = label;
@@ -49,8 +49,9 @@ Logger.prototype.get = function (label, level, transportConfig) {
 
   // Create a new logger with the console transport layer by default
   return this._container.get(label, {
-    transports: transports
-  }).setLevels(this._settings.levels);
+    transports,
+    levels: this._settings.levels
+  });
 };
 
 // Protect against usage without instantiation
