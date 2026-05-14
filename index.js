@@ -41,6 +41,25 @@ Logger.prototype.get = function (label, level, transportConfig) {
   const transports = _.map(transportKeys, transport => {
     const transportSettings = conf[transport];
 
+    // Convert removed winston 2.x format options to winston 3.x format instances.
+    // These options were removed in https://github.com/winstonjs/winston/blob/master/UPGRADE-3.0.md
+    const formats = [];
+    if (transportSettings.colorize) {
+      formats.push(winston.format.colorize());
+      delete transportSettings.colorize;
+    }
+    if (transportSettings.prettyPrint) {
+      formats.push(winston.format.prettyPrint());
+      delete transportSettings.prettyPrint;
+    }
+    if (transportSettings.padLevels) {
+      formats.push(winston.format.padLevels());
+      delete transportSettings.padLevels;
+    }
+    if (formats.length) {
+      transportSettings.format = winston.format.combine(...formats);
+    }
+
     transportSettings.label = label;
     transportSettings.level = levelToUse || transportSettings.level;
 

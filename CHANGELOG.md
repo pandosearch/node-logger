@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.0.1
+
+### Changes
+
+#### Automatic conversion of winston 2.x transport format options
+
+Transport config keys that were removed in winston 3.x (`colorize`, `prettyPrint`, `padLevels`) are now automatically converted to their `winston.format` equivalents by the logger. Existing transport configuration requires no changes:
+
+```js
+new Logger({
+  winston: {
+    transports: {
+      Console: {
+        colorize: true,   // still works — converted to winston.format.colorize()
+        prettyPrint: true // still works — converted to winston.format.prettyPrint()
+      }
+    }
+  }
+});
+```
+
+Multiple options are combined into a single `winston.format.combine()` call.
+
+---
+
 ## 2.0.0
 
 ### Breaking changes

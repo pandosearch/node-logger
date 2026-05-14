@@ -31,12 +31,24 @@ const winstonContainer = {
   get: sinon.stub().returns(winstonLogger)
 };
 
+// Unique sentinel objects so tests can identity-check which formats were applied
+const colorizeFormat = {name: 'colorize'};
+const prettyPrintFormat = {name: 'prettyPrint'};
+const padLevelsFormat = {name: 'padLevels'};
+const combinedFormat = {name: 'combined'};
+
 const winston = {
   loggers: {
     add: sinon.stub().returns(winstonCLI)
   },
   Container: sinon.stub().returns(winstonContainer),
-  transports: {}
+  transports: {},
+  format: {
+    colorize: sinon.stub().returns(colorizeFormat),
+    prettyPrint: sinon.stub().returns(prettyPrintFormat),
+    padLevels: sinon.stub().returns(padLevelsFormat),
+    combine: sinon.stub().returns(combinedFormat)
+  }
 };
 
 // Keep reference to main (Proxied) Logger constructor.
@@ -52,6 +64,10 @@ beforeEach(() => {
     Console: sinon.stub(),
     LogstashUDP: sinon.stub()
   };
+  winston.format.colorize.resetHistory();
+  winston.format.prettyPrint.resetHistory();
+  winston.format.padLevels.resetHistory();
+  winston.format.combine.resetHistory();
 });
 
 describe('Logger', () => {
@@ -102,7 +118,7 @@ describe('Logger', () => {
     new ProxiedLogger().get('TEST');
     expect(winston.transports.Console).to.have.been.calledWith({
       level: 'info',
-      colorize: true,
+      format: combinedFormat,
       label: 'TEST'
     });
   });
@@ -125,7 +141,7 @@ describe('Logger', () => {
     }).get('TEST');
     expect(winston.transports.Console).to.have.been.calledWith({
       level: 'info',
-      colorize: true,
+      format: combinedFormat,
       label: 'TEST'
     });
     expect(winston.transports.LogstashUDP).to.have.been.calledWith({
@@ -184,7 +200,7 @@ describe('Logger', () => {
 
     expect(winston.transports.Console).to.have.been.calledWith({
       level: 'info',
-      colorize: true,
+      format: combinedFormat,
       extra: 'settings',
       label: 'label'
     });
@@ -211,7 +227,7 @@ describe('Logger', () => {
     new ProxiedLogger(config).get('Number1');
     expect(winston.transports.Console).to.have.been.calledWith({
       level: 'trace',
-      colorize: true,
+      format: combinedFormat,
       label: 'Number1'
     });
     expect(winston.transports.LogstashUDP).to.have.been.calledWith({
@@ -222,12 +238,57 @@ describe('Logger', () => {
     new ProxiedLogger(config).get('Number2');
     expect(winston.transports.Console).to.have.been.calledWith({
       level: 'info',
-      colorize: true,
+      format: combinedFormat,
       label: 'Number2'
     });
     expect(winston.transports.LogstashUDP).to.have.been.calledWith({
       level: 'verbose',
       label: 'Number2'
+    });
+  });
+
+  describe('winston 2.x format option conversion', () => {
+    it('converts colorize: true to winston.format.colorize() and removes the key', () => {
+      new ProxiedLogger().get('TEST');
+      expect(winston.format.colorize).to.have.been.calledOnce;
+      expect(winston.format.combine).to.have.been.calledWith(colorizeFormat);
+      expect(winston.transports.Console).to.have.been.calledWith(sinon.match({format: combinedFormat}));
+      expect(winston.transports.Console).to.not.have.been.calledWith(sinon.match.has('colorize'));
+    });
+
+    it('converts prettyPrint: true to winston.format.prettyPrint() and removes the key', () => {
+      new ProxiedLogger({
+        winston: {transports: {Console: {colorize: null, prettyPrint: true}}}
+      }).get('TEST');
+      expect(winston.format.prettyPrint).to.have.been.calledOnce;
+      expect(winston.format.combine).to.have.been.calledWith(prettyPrintFormat);
+      expect(winston.transports.Console).to.have.been.calledWith(sinon.match({format: combinedFormat}));
+      expect(winston.transports.Console).to.not.have.been.calledWith(sinon.match.has('prettyPrint'));
+    });
+
+    it('converts padLevels: true to winston.format.padLevels() and removes the key', () => {
+      new ProxiedLogger({
+        winston: {transports: {Console: {colorize: null, padLevels: true}}}
+      }).get('TEST');
+      expect(winston.format.padLevels).to.have.been.calledOnce;
+      expect(winston.format.combine).to.have.been.calledWith(padLevelsFormat);
+      expect(winston.transports.Console).to.have.been.calledWith(sinon.match({format: combinedFormat}));
+      expect(winston.transports.Console).to.not.have.been.calledWith(sinon.match.has('padLevels'));
+    });
+
+    it('combines multiple format options into a single format.combine() call', () => {
+      new ProxiedLogger({
+        winston: {transports: {Console: {colorize: true, prettyPrint: true, padLevels: true}}}
+      }).get('TEST');
+      expect(winston.format.combine).to.have.been.calledWith(colorizeFormat, prettyPrintFormat, padLevelsFormat);
+    });
+
+    it('does not add a format when no format options are set', () => {
+      new ProxiedLogger({
+        winston: {transports: {Console: {colorize: null}}}
+      }).get('TEST');
+      expect(winston.format.combine).to.not.have.been.called;
+      expect(winston.transports.Console).to.not.have.been.calledWith(sinon.match.has('format'));
     });
   });
 });

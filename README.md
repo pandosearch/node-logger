@@ -89,5 +89,13 @@ The keys define the transports that the logger should use, the value is the conf
 - `Http`: [winston.Http documentation](https://github.com/winstonjs/winston/blob/master/docs/transports.md#http-transport)
 - `LogstashUDP`: built-in transport, options: `host`, `port`, `appName`, `localhost`, `pid`, `trailingLineFeed`, `trailingLineFeedChar`
 
+The following transport options from winston 2.x are automatically converted to their `winston.format` equivalents and can still be used as-is in transport config:
+
+| Option | Converted to |
+|---|---|
+| `colorize: true` | `winston.format.colorize()` |
+| `prettyPrint: true` | `winston.format.prettyPrint()` |
+| `padLevels: true` | `winston.format.padLevels()` |
+
 #### `winston.levels`
 The node-logger uses more detailed log-levels than winston does. The higher the priority the more important the message is considered to be, and the lower the corresponding integer priority. These levels can be modified to your liking.
